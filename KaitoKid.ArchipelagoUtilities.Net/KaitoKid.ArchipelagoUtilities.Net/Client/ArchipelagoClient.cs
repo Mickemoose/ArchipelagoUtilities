@@ -88,8 +88,15 @@ namespace KaitoKid.ArchipelagoUtilities.Net.Client
                 InitSession(connectionInfo);
                 var itemsHandling = ItemsHandlingFlags.AllItems;
                 var apVersion = new Version(0, 6, 1);
-                var tags = connectionInfo.DeathLink == true ? new[] { "AP", "DeathLink" } : new[] { "AP" };
-                result = _session.TryConnectAndLogin(GameName, _connectionInfo.SlotName, itemsHandling, apVersion, tags, null, _connectionInfo.Password);
+                var tags = new List<string> { "AP" };
+                if (connectionInfo.DeathLink == true)
+                {
+                    tags.Add("DeathLink");
+                }
+
+                tags.AddRange(connectionInfo.ConnectionTags ?? new List<string>());
+                tags = tags.Distinct().ToList();
+                result = _session.TryConnectAndLogin(GameName, _connectionInfo.SlotName, itemsHandling, apVersion, tags.ToArray(), null, _connectionInfo.Password);
             }
             catch (Exception e)
             {
